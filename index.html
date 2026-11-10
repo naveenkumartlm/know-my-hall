@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Know My Hall - Sona College of Technology</title>
+<meta name="description" content="Find your exam hall allotment and location at Sona College of Technology">
+<meta name="theme-color" content="#2c3e5a">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap">
+
+<style>
+/* Layout: single-column mobile-first app with hash-routed views */
+:root {
+  --bg: #ffffff;
+  --bg-surface: #f0f4f8;
+  --fg: #1a2332;
+  --fg-muted: #5a6a7e;
+  --accent: #0288d1;
+  --accent-light: #e1f1fa;
+  --accent-dark: #01579b;
+  --banner-bg: #2c3e5a;
+  --banner-gold: #f0c030;
+  --border: #d8e0e8;
+  --success: #2e7d32;
+  --radius: 10px;
+  --font-display: 'Plus Jakarta Sans', 'Arial Black', sans-serif;
+  --font-body: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111820;
+    --bg-surface: #1a2332;
+    --fg: #e4e8ee;
+    --fg-muted: #8a9ab0;
+    --accent: #4fc3f7;
+    --accent-light: #172a3a;
+    --accent-dark: #81d4fa;
+    --banner-bg: #1a2840;
+    --banner-gold: #f0c030;
+    --border: #2a3648;
+    --success: #66bb6a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111820;
+  --bg-surface: #1a2332;
+  --fg: #e4e8ee;
+  --fg-muted: #8a9ab0;
+  --accent: #4fc3f7;
+  --accent-light: #172a3a;
+  --accent-dark: #81d4fa;
+  --banner-bg: #1a2840;
+  --banner-gold: #f0c030;
+  --border: #2a3648;
+  --success: #66bb6a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--banner-bg);
+}
+
+/* Banner */
+.banner {
+  background: var(--banner-bg);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding: 28px max(16px, env(safe-area-inset-right, 0px)) 22px max(16px, env(safe-area-inset-left, 0px));
+  text-align: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.banner h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1.15;
+  color: var(--banner-gold);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.banner p {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #c0cee0;
+  margin-top: 4px;
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+.banner .back-btn {
+  position: absolute;
+  left: max(16px, env(safe-area-inset-left, 0px));
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #c0cee0;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  display: none;
+}
+
+.banner .back-btn:hover { color: #fff; }
+
+/* App content */
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-block: 24px;
+}
+
+/* View container */
+.view { display: none; flex-direction: column; gap: 20px; flex: 1; }
+.view.active { display: flex; }
+
+/* ─── HOME ─── */
+.home-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  width: 100%;
+}
+
+.nav-btn:hover, .nav-btn:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  outline: none;
+}
+
+.nav-btn .icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-btn .icon svg { width: 22px; height: 22px; }
+
+.nav-btn span { flex: 1; }
+
+.nav-btn .arrow { color: var(--fg-muted); font-size: 1.1rem; }
+
+.home-footer {
+  margin-top: auto;
+  padding-top: 30px;
+  text-align: center;
+}
+
+.home-footer .desk-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 10px;
+  opacity: 0.6;
+}
+
+.home-footer p {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+}
+
+/* ─── HALL ALLOTMENT ─── */
+.form-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+}
+
+.form-card label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.form-card input,
+.form-card select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: var(--bg);
+  color: var(--fg);
+  margin-bottom: 18px;
+  transition: border-color 0.15s;
+}
+
+.form-card input:focus,
+.form-card select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-card input::placeholder { color: var(--fg-muted); }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--border); color: var(--fg); }
+
+/* Result card */
+.result-card {
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  text-align: center;
+  display: none;
+}
+
+.result-card.show { display: block; }
+
+.result-card .result-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+
+.result-card .hall-number {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.result-card .location-info {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--fg);
+  line-height: 1.6;
+}
+
+.result-card .location-info strong { color: var(--accent); }
+
+.result-card.error {
+  border-color: #c62828;
+  background: #ffeaea;
+}
+
+:root[data-theme="dark"] .result-card.error,
+:root:not([data-theme="light"]) .result-card.error {
+  background: #2a1515;
+}
+
+.result-card.error .hall-number { color: #c62828; font-size: 1.2rem; }
+
+/* Loading spinner */
+.spinner {
+  display: none;
+  text-align: center;
+  padding: 30px;
+  color: var(--fg-muted);
+}
+
+.spinner.show { display: block; }
+
+.spinner::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── HALL LOCATION ─── */
+.location-section {
+  margin-bottom: 8px;
+}
+
+.location-section h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px;
+  color: var(--fg);
+  letter-spacing: 0.3px;
+}
+
+.loc-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.loc-table td {
+  padding: 10px 16px;
+  font-size: 0.9rem;
+}
+
+.loc-table tr:nth-child(odd) td:first-child {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  width: 45%;
+  text-align: center;
+}
+
+.loc-table tr:nth-child(even) td:first-child {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  width: 45%;
+  text-align: center;
+}
+
+.loc-table td:first-child {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  width: 45%;
+  text-align: center;
+}
+
+.loc-table td:last-child {
+  background: var(--bg-surface);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── ABOUT ─── */
+.about-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+}
+
+.about-card h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--fg);
+}
+
+.about-card p {
+  font-size: 0.92rem;
+  color: var(--fg-muted);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.about-card .credits {
+  margin-top: 20px;
+}
+
+.about-card .credits h3 { margin-bottom: 10px; }
+
+.about-card .credit-line {
+  font-size: 0.88rem;
+  color: var(--fg);
+  padding: 4px 0;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+
+<!-- Banner -->
+<div class="banner">
+  <button class="back-btn" id="backBtn" onclick="navigateTo('home')" aria-label="Go back">&#8592;</button>
+  <h1>Sona College<br>of Technology</h1>
+  <p>Learning is a Celebration!</p>
+</div>
+
+<div class="app-content">
+
+  <!-- HOME VIEW -->
+  <div class="view active" id="view-home">
+    <nav class="home-nav">
+      <button class="nav-btn" onclick="navigateTo('allotment')">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>
+        </div>
+        <span>Hall Allotment</span>
+        <span class="arrow">&#8250;</span>
+      </button>
+
+      <button class="nav-btn" onclick="navigateTo('location')">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        </div>
+        <span>Hall Location</span>
+        <span class="arrow">&#8250;</span>
+      </button>
+
+      <button class="nav-btn" onclick="navigateTo('about')">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        </div>
+        <span>About</span>
+        <span class="arrow">&#8250;</span>
+      </button>
+    </nav>
+
+    <div class="home-footer">
+      <svg class="desk-icon" viewBox="0 0 80 80" fill="none">
+        <rect x="18" y="22" width="44" height="24" rx="3" fill="var(--accent)" opacity="0.2" stroke="var(--accent)" stroke-width="2"/>
+        <rect x="30" y="28" width="20" height="6" rx="1" fill="var(--banner-gold)"/>
+        <line x1="24" y1="46" x2="24" y2="60" stroke="var(--fg-muted)" stroke-width="2.5"/>
+        <line x1="56" y1="46" x2="56" y2="60" stroke="var(--fg-muted)" stroke-width="2.5"/>
+        <line x1="18" y1="60" x2="30" y2="60" stroke="var(--fg-muted)" stroke-width="2.5"/>
+        <line x1="50" y1="60" x2="62" y2="60" stroke="var(--fg-muted)" stroke-width="2.5"/>
+      </svg>
+      <p>Controller of Examinations</p>
+    </div>
+  </div>
+
+  <!-- HALL ALLOTMENT VIEW -->
+  <div class="view" id="view-allotment">
+    <div class="form-card">
+      <label for="regNo">Register Number</label>
+      <input type="text" id="regNo" placeholder="Enter register number" autocomplete="off">
+
+      <label for="yearSelect">Year of Study</label>
+      <select id="yearSelect">
+        <option value="" disabled selected>Select year</option>
+        <option value="1">I Year</option>
+        <option value="2">II Year</option>
+        <option value="3">III Year</option>
+        <option value="4">IV Year</option>
+      </select>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="submitBtn" onclick="findHall()">Submit</button>
+        <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+      </div>
+    </div>
+
+    <div class="spinner" id="spinner">
+      <br>Searching...
+    </div>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-label">Your Hall Number</div>
+      <div class="hall-number" id="hallResult"></div>
+      <div class="location-info" id="locationResult"></div>
+    </div>
+  </div>
+
+  <!-- HALL LOCATION VIEW -->
+  <div class="view" id="view-location">
+    <div class="spinner show" id="locSpinner"><br>Loading hall locations...</div>
+    <div id="locContainer"></div>
+    <div id="locError" style="display:none; text-align:center; padding:30px; color:var(--fg-muted);">
+      Could not load hall location data. Please check your internet connection.
+      <br><br>
+      <button class="btn btn-primary" style="max-width:200px;margin:0 auto;" onclick="loadLocationData()">Retry</button>
+    </div>
+  </div>
+
+  <!-- ABOUT VIEW -->
+  <div class="view" id="view-about">
+    <div class="about-card">
+      <h3>About</h3>
+      <p>Application helpful for the students to check their allotment of exam hall.</p>
+    </div>
+    <div class="about-card credits">
+      <h3>Developed by</h3>
+      <p class="credit-line">Department of Information Technology</p>
+      <p class="credit-line">Dr.J.Akilandeswari, Prof &amp; Head/IT</p>
+      <p class="credit-line">Mr.A.Naveenkumar, Ass. Prof/IT</p>
+      <p class="credit-line">Mr.R.Harikrishna, (2021 – 2024)/IT</p>
+      <p class="credit-line">Mr.G.Abhindra, (2020 – 2024)/IT</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Published Google Sheet CSV URLs ───
+// Year 1 hall allotment data
+var SHEET_YEAR1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTl3D2crK0hJ8LYApcvhjlbbjhY99k123uCyZ48-shuUA4nPQf0Eq7tR9DtwmJ9ydynuvKTSt9Q7EJ/pub?output=csv';
+// Year 2, 3, 4 and Arrear hall allotment data (all share this sheet)
+var SHEET_YEAR234 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnF8DZQTCObS6_C30FrYRAulmDZKG-J2wMONbFSVCq-Wp0JhyQihprrkNHrBMn7gjbEsHhGJ3Tax3e/pub?output=csv';
+// Hall location mapping (block, floor)
+var SHEET_LOCATION = 'https://docs.google.com/spreadsheets/d/1CPAO5ZUcPCJW7S8dY4JmgfQwU60ROlkiZmCu3dzYoKk/pub?output=csv';
+
+// ─── Hall location data (synced from Google Sheet) ───
+// Last updated from: https://docs.google.com/spreadsheets/d/1CPAO5ZUcPCJW7S8dY4JmgfQwU60ROlkiZmCu3dzYoKk
+var LOCATION_DATA = [
+  {hallno:'103',block:'MECH/EEE Block',floor:'Ground Floor'},
+  {hallno:'104',block:'MECH/EEE Block',floor:'Ground Floor'},
+  {hallno:'105',block:'MECH/EEE Block',floor:'Ground Floor'},
+  {hallno:'111',block:'MECH/EEE Block',floor:'I st Floor'},
+  {hallno:'112',block:'MECH/EEE Block',floor:'I st Floor'},
+  {hallno:'113',block:'MECH/EEE Block',floor:'I st Floor'},
+  {hallno:'114',block:'MECH/EEE Block',floor:'I st Floor'},
+  {hallno:'115',block:'MECH/EEE Block',floor:'I st Floor'},
+  {hallno:'116',block:'MECH/EEE Block',floor:'I st Floor'},
+  {hallno:'117',block:'MECH/EEE Block',floor:'I st Floor'},
+  {hallno:'202',block:'MBA Block',floor:'Ground Floor'},
+  {hallno:'204',block:'MBA Block',floor:'I st Floor'},
+  {hallno:'211',block:'MBA Block',floor:'I st Floor'},
+  {hallno:'212',block:'MBA Block',floor:'I st Floor'},
+  {hallno:'214',block:'MBA Block',floor:'I st Floor'},
+  {hallno:'323',block:'CSE Block',floor:'II nd Floor'},
+  {hallno:'324',block:'CSE Block',floor:'II nd Floor'},
+  {hallno:'332',block:'CSE Block',floor:'III rd Floor'},
+  {hallno:'333',block:'CSE Block',floor:'III rd Floor'},
+  {hallno:'335',block:'CSE Block',floor:'III rd Floor'},
+  {hallno:'427',block:'Old FT Block',floor:'II nd Floor'},
+  {hallno:'432',block:'Old FT Block',floor:'III rd Floor'},
+  {hallno:'433',block:'Old FT Block',floor:'III rd Floor'},
+  {hallno:'435',block:'Old FT Block',floor:'III rd Floor'},
+  {hallno:'521',block:'IT Block',floor:'II nd Floor'},
+  {hallno:'522',block:'IT Block',floor:'II nd Floor'},
+  {hallno:'523',block:'IT Block',floor:'II nd Floor'},
+  {hallno:'524',block:'IT Block',floor:'II nd Floor'},
+  {hallno:'532',block:'IT Block',floor:'III rd Floor'},
+  {hallno:'533',block:'IT Block',floor:'III rd Floor'},
+  {hallno:'626',block:'CIVIL Block',floor:'II nd Floor'},
+  {hallno:'632',block:'CIVIL Block',floor:'III rd Floor'},
+  {hallno:'642',block:'CIVIL Block',floor:'IV th Floor'},
+  {hallno:'643',block:'CIVIL Block',floor:'IV th Floor'},
+  {hallno:'645',block:'CIVIL Block',floor:'IV th Floor'},
+  {hallno:'924',block:'ECE Block',floor:'II nd Floor'},
+  {hallno:'925',block:'ECE Block',floor:'II nd Floor'},
+  {hallno:'926',block:'ECE Block',floor:'II nd Floor'},
+  {hallno:'933',block:'ECE Block',floor:'III rd Floor'},
+  {hallno:'934',block:'ECE Block',floor:'III rd Floor'},
+  {hallno:'935',block:'ECE Block',floor:'III rd Floor'},
+  {hallno:'936',block:'ECE Block',floor:'III rd Floor'},
+  {hallno:'943',block:'BME Block',floor:'IV th Floor'},
+  {hallno:'944',block:'BME Block',floor:'IV th Floor'},
+  {hallno:'1003',block:'MCA Block',floor:'Ground Floor'},
+  {hallno:'1004',block:'MCA Block',floor:'Ground Floor'},
+  {hallno:'1013',block:'MCA Block',floor:'I st Floor'},
+  {hallno:'1014',block:'MCA Block',floor:'I st Floor'},
+  {hallno:'IT 01',block:'MCA Block-IT Seminar Hall',floor:'I st Floor'},
+  {hallno:'IT 02',block:'MCA Block-IT Seminar Hall',floor:'I st Floor'},
+  {hallno:'IT 03',block:'MCA Block-IT Seminar Hall',floor:'I st Floor'},
+  {hallno:'IT 04',block:'MCA Block-IT Seminar Hall',floor:'I st Floor'},
+  {hallno:'IT 05',block:'MCA Block-IT Seminar Hall',floor:'I st Floor'},
+  {hallno:'IT 06',block:'MCA Block-IT Seminar Hall',floor:'I st Floor'},
+  {hallno:'MBA SH1',block:'MBA Seminar Hall:SH1',floor:'II nd Floor'},
+  {hallno:'MBA SH2',block:'MBA Seminar Hall:SH2',floor:'II nd Floor'},
+  {hallno:'MBA SH3',block:'MBA Seminar Hall:SH3',floor:'II nd Floor'},
+  {hallno:'MBA SH4',block:'MBA Seminar Hall:SH4',floor:'II nd Floor'},
+  {hallno:'2115',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2116',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2117',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2118',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2119',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2120',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2121',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2122',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2123',block:'ARTS COLLEGE',floor:'I FLOOR'},
+  {hallno:'2217',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2218',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2219',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2220',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2221',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2222',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2223',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2224',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2225',block:'ARTS COLLEGE',floor:'II FLOOR'},
+  {hallno:'2316',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'2317',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'2318',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'2319',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'2320',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'2321',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'2322',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'2323',block:'ARTS COLLEGE',floor:'III FLOOR'},
+  {hallno:'1111',block:'AI BLOCK',floor:'I FLOOR'},
+  {hallno:'1112',block:'AI BLOCK',floor:'I FLOOR'},
+  {hallno:'1113',block:'AI BLOCK',floor:'I FLOOR'},
+  {hallno:'1114',block:'AI BLOCK',floor:'I FLOOR'},
+  {hallno:'1115',block:'AI BLOCK',floor:'I FLOOR'},
+  {hallno:'1121',block:'AI BLOCK',floor:'II FLOOR'},
+  {hallno:'1122',block:'AI BLOCK',floor:'II FLOOR'},
+  {hallno:'1123',block:'AI BLOCK',floor:'II FLOOR'},
+  {hallno:'1124',block:'AI BLOCK',floor:'II FLOOR'},
+  {hallno:'1125',block:'AI BLOCK',floor:'II FLOOR'},
+  {hallno:'1131',block:'AI BLOCK',floor:'III FLOOR'},
+  {hallno:'1132',block:'AI BLOCK',floor:'III FLOOR'},
+  {hallno:'1133',block:'AI BLOCK',floor:'III FLOOR'},
+  {hallno:'1134',block:'AI BLOCK',floor:'III FLOOR'},
+  {hallno:'1141',block:'AI BLOCK',floor:'IV  Floor'},
+  {hallno:'1142',block:'AI BLOCK',floor:'IV  Floor'},
+  {hallno:'1143',block:'AI BLOCK',floor:'IV  Floor'},
+  {hallno:'1144',block:'AI BLOCK',floor:'IV  Floor'},
+  {hallno:'1151',block:'AI BLOCK',floor:'V  Floor'},
+  {hallno:'1152',block:'AI BLOCK',floor:'V  Floor'},
+  {hallno:'1153',block:'AI BLOCK',floor:'V  Floor'},
+  {hallno:'1154',block:'AI BLOCK',floor:'V  Floor'}
+];
+
+// Build the HALL_LOCATIONS lookup from embedded data
+var HALL_LOCATIONS = {};
+for (var i = 0; i < LOCATION_DATA.length; i++) {
+  HALL_LOCATIONS[LOCATION_DATA[i].hallno] = LOCATION_DATA[i].block + ' – ' + LOCATION_DATA[i].floor;
+}
+
+// ─── CSV Parser (lightweight, no library needed) ───
+function parseCSV(text) {
+  var lines = text.split('\n');
+  var headers = [];
+  var data = [];
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line) continue;
+    // Simple split — these sheets have no commas in values
+    var cols = line.split(',');
+    if (i === 0) {
+      headers = cols.map(function(h) { return h.trim().toLowerCase(); });
+    } else {
+      var row = {};
+      for (var j = 0; j < headers.length; j++) {
+        row[headers[j]] = (cols[j] || '').trim();
+      }
+      data.push(row);
+    }
+  }
+  return data;
+}
+
+// ─── Navigation ───
+function navigateTo(view) {
+  location.hash = view === 'home' ? '' : view;
+}
+
+function showView(viewName) {
+  var views = document.querySelectorAll('.view');
+  for (var i = 0; i < views.length; i++) {
+    views[i].classList.remove('active');
+  }
+  var target = document.getElementById('view-' + viewName);
+  if (target) target.classList.add('active');
+
+  var backBtn = document.getElementById('backBtn');
+  backBtn.style.display = viewName === 'home' ? 'none' : 'block';
+
+  // Reset result when navigating to allotment
+  if (viewName === 'allotment') {
+    document.getElementById('resultCard').classList.remove('show');
+    document.getElementById('spinner').classList.remove('show');
+  }
+}
+
+function routeFromHash() {
+  var hash = location.hash.replace('#', '') || 'home';
+  if (['home', 'allotment', 'location', 'about'].indexOf(hash) === -1) hash = 'home';
+  showView(hash);
+}
+
+window.addEventListener('hashchange', routeFromHash);
+routeFromHash();
+
+// ─── Hall Lookup ───
+function findHall() {
+  var regNo = document.getElementById('regNo').value.trim();
+  var year = document.getElementById('yearSelect').value;
+  var resultCard = document.getElementById('resultCard');
+  var spinner = document.getElementById('spinner');
+
+  if (!regNo) {
+    showError('Please enter your register number.');
+    return;
+  }
+  if (!year) {
+    showError('Please select your year of study.');
+    return;
+  }
+
+  resultCard.classList.remove('show');
+  resultCard.classList.remove('error');
+  spinner.classList.add('show');
+  document.getElementById('submitBtn').disabled = true;
+
+  // Pick the right sheet based on year
+  var sheetUrl = year === '1' ? SHEET_YEAR1 : SHEET_YEAR234;
+
+  fetch(sheetUrl)
+    .then(function(res) { return res.text(); })
+    .then(function(csv) {
+      var rows = parseCSV(csv);
+      var hallNo = null;
+
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].regno === regNo) {
+          hallNo = rows[i].hallno;
+          break;
+        }
+      }
+
+      spinner.classList.remove('show');
+      document.getElementById('submitBtn').disabled = false;
+
+      if (hallNo && hallNo !== '0') {
+        showResult(hallNo);
+      } else {
+        showError('No hall allotment found for register number ' + regNo + '. Please check your register number and year.');
+      }
+    })
+    .catch(function(err) {
+      spinner.classList.remove('show');
+      document.getElementById('submitBtn').disabled = false;
+      showError('Could not connect to the server. Please check your internet connection and try again.');
+    });
+}
+
+function showResult(hallNo) {
+  var resultCard = document.getElementById('resultCard');
+  var hallResult = document.getElementById('hallResult');
+  var locationResult = document.getElementById('locationResult');
+
+  resultCard.classList.remove('error');
+  hallResult.textContent = hallNo;
+
+  // Look up location
+  var loc = HALL_LOCATIONS[hallNo];
+  if (loc) {
+    var parts = loc.split(' – ');
+    locationResult.innerHTML = '<strong>' + parts[0] + '</strong><br>' + parts[1];
+  } else {
+    // Try fetching from Google Sheet
+    fetchLocationFromSheet(hallNo, locationResult);
+  }
+
+  resultCard.classList.add('show');
+}
+
+function fetchLocationFromSheet(hallNo, locationEl) {
+  locationEl.innerHTML = 'Looking up location...';
+  fetch(SHEET_LOCATION)
+    .then(function(res) { return res.text(); })
+    .then(function(csv) {
+      var rows = parseCSV(csv);
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].hallno === hallNo) {
+          locationEl.innerHTML = '<strong>' + rows[i].block + '</strong><br>' + rows[i].floor;
+          return;
+        }
+      }
+      locationEl.innerHTML = 'Location not available for this hall.';
+    })
+    .catch(function() {
+      locationEl.innerHTML = 'Could not load location data.';
+    });
+}
+
+function showError(msg) {
+  var resultCard = document.getElementById('resultCard');
+  var hallResult = document.getElementById('hallResult');
+  var locationResult = document.getElementById('locationResult');
+
+  resultCard.classList.add('error');
+  hallResult.textContent = msg;
+  locationResult.innerHTML = '';
+  resultCard.classList.add('show');
+  document.getElementById('spinner').classList.remove('show');
+}
+
+function clearForm() {
+  document.getElementById('regNo').value = '';
+  document.getElementById('yearSelect').selectedIndex = 0;
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('resultCard').classList.remove('error');
+  document.getElementById('spinner').classList.remove('show');
+}
+
+// Allow Enter key to submit
+document.getElementById('regNo').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') findHall();
+});
+
+// ─── Load Hall Location Data (fetch from Google Sheet, fallback to embedded) ───
+var locationDataLoaded = false;
+
+function renderLocationData(rows) {
+
+  // Group by block
+  var blocks = {};
+  var blockOrder = [];
+  for (var i = 0; i < rows.length; i++) {
+    var block = rows[i].block || 'Unknown';
+    if (!blocks[block]) {
+      blocks[block] = {};
+      blockOrder.push(block);
+    }
+    var floor = rows[i].floor || 'Unknown';
+    if (!blocks[block][floor]) {
+      blocks[block][floor] = [];
+    }
+    blocks[block][floor].push(rows[i].hallno);
+  }
+
+  // Floor sort order
+  var floorPriority = {
+    'ground': 0, 'i st': 1, 'ist': 1, '1st': 1, 'i floor': 1,
+    'ii nd': 2, 'iind': 2, '2nd': 2, 'ii floor': 2,
+    'iii rd': 3, 'iiird': 3, '3rd': 3, 'iii floor': 3,
+    'iv': 4, 'ivth': 4, '4th': 4, 'iv floor': 4,
+    'v': 5, 'vth': 5, '5th': 5, 'v floor': 5
+  };
+
+  function getFloorOrder(floorName) {
+    var lower = floorName.toLowerCase().trim();
+    for (var key in floorPriority) {
+      if (lower.indexOf(key) !== -1) return floorPriority[key];
+    }
+    return 99;
+  }
+
+  // Build HTML for each block
+  var html = '';
+  for (var b = 0; b < blockOrder.length; b++) {
+    var blockName = blockOrder[b];
+    var floors = blocks[blockName];
+
+    // Sort floors
+    var floorNames = Object.keys(floors);
+    floorNames.sort(function(a, b) {
+      return getFloorOrder(a) - getFloorOrder(b);
+    });
+
+    html += '<div class="location-section"><h3>' + blockName.toUpperCase() + '</h3>';
+    html += '<table class="loc-table">';
+
+    for (var f = 0; f < floorNames.length; f++) {
+      var floorLabel = floorNames[f];
+      var halls = floors[floorLabel];
+
+      // Sort hall numbers numerically
+      halls.sort(function(a, b) {
+        var na = parseInt(a) || 0;
+        var nb = parseInt(b) || 0;
+        return na - nb;
+      });
+
+      // Build hall range string (group consecutive numbers)
+      var rangeStr = buildRangeString(halls);
+
+      html += '<tr><td>' + floorLabel + '</td><td>' + rangeStr + '</td></tr>';
+    }
+
+    html += '</table></div>';
+  }
+
+  spinner.classList.remove('show');
+  container.innerHTML = html;
+  locationDataLoaded = true;
+
+  // Update the HALL_LOCATIONS lookup
+  for (var i = 0; i < rows.length; i++) {
+    if (rows[i].hallno && rows[i].hallno !== '0') {
+      HALL_LOCATIONS[rows[i].hallno] = rows[i].block + ' – ' + rows[i].floor;
+    }
+  }
+}
+
+function loadLocationData() {
+  var container = document.getElementById('locContainer');
+  var spinner = document.getElementById('locSpinner');
+  var errorEl = document.getElementById('locError');
+
+  container.innerHTML = '';
+  spinner.classList.add('show');
+  errorEl.style.display = 'none';
+
+  // Try fetching live data from Google Sheet first
+  fetch(SHEET_LOCATION)
+    .then(function(res) { return res.text(); })
+    .then(function(csv) {
+      var rows = parseCSV(csv);
+      rows = rows.filter(function(r) { return r.hallno && r.hallno !== '0'; });
+      if (rows.length > 0) {
+        renderLocationData(rows);
+      } else {
+        // Empty sheet — use embedded fallback
+        renderLocationData(LOCATION_DATA);
+      }
+    })
+    .catch(function() {
+      // Fetch failed — use embedded fallback data
+      renderLocationData(LOCATION_DATA);
+    });
+}
+
+function buildRangeString(halls) {
+  if (halls.length === 0) return '';
+  if (halls.length === 1) return halls[0];
+
+  // Separate numeric and non-numeric halls
+  var numeric = [];
+  var nonNumeric = [];
+  for (var i = 0; i < halls.length; i++) {
+    var n = parseInt(halls[i]);
+    if (!isNaN(n) && String(n) === halls[i]) {
+      numeric.push(n);
+    } else {
+      nonNumeric.push(halls[i]);
+    }
+  }
+
+  numeric.sort(function(a, b) { return a - b; });
+
+  var parts = [];
+  var start = numeric[0];
+  var end = numeric[0];
+
+  for (var i = 1; i < numeric.length; i++) {
+    if (numeric[i] === end + 1) {
+      end = numeric[i];
+    } else {
+      parts.push(start === end ? String(start) : start + ' – ' + end);
+      start = numeric[i];
+      end = numeric[i];
+    }
+  }
+  if (numeric.length > 0) {
+    parts.push(start === end ? String(start) : start + ' – ' + end);
+  }
+
+  // Add non-numeric halls
+  for (var i = 0; i < nonNumeric.length; i++) {
+    parts.push(nonNumeric[i]);
+  }
+
+  return parts.join(', ');
+}
+
+// Load location data when navigating to the location view
+var origShowView = showView;
+showView = function(viewName) {
+  origShowView(viewName);
+  if (viewName === 'location' && !locationDataLoaded) {
+    loadLocationData();
+  }
+};
+</script>
+</body>
+</html>

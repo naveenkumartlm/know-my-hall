@@ -863,6 +863,8 @@ document.getElementById('regNo').addEventListener('keydown', function(e) {
 var locationDataLoaded = false;
 
 function renderLocationData(rows) {
+  var container = document.getElementById('locContainer');
+  var spinner = document.getElementById('locSpinner');
 
   // Group by block
   var blocks = {};
@@ -945,31 +947,34 @@ function renderLocationData(rows) {
 }
 
 function loadLocationData() {
-  var container = document.getElementById('locContainer');
-  var spinner = document.getElementById('locSpinner');
   var errorEl = document.getElementById('locError');
-
-  container.innerHTML = '';
-  spinner.classList.add('show');
   errorEl.style.display = 'none';
 
-  // Try fetching live data from Google Sheet first
-  fetch(SHEET_LOCATION)
-    .then(function(res) { return res.text(); })
-    .then(function(csv) {
-      var rows = parseCSV(csv);
-      rows = rows.filter(function(r) { return r.hallno && r.hallno !== '0'; });
-      if (rows.length > 0) {
-        renderLocationData(rows);
-      } else {
-        // Empty sheet — use embedded fallback
-        renderLocationData(LOCATION_DATA);
-      }
-    })
-    .catch(function() {
-      // Fetch failed — use embedded fallback data
-      renderLocationData(LOCATION_DATA);
-    });
+  // Show embedded data immediately (no waiting)
+  renderLocationData(LOCATION_DATA);
+
+  // Try fetching live data from Google Sheet in the background to refresh
+  try {
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function() { controller.abort(); }, 5000);
+
+    fetch(SHEET_LOCATION, { signal: controller.signal })
+      .then(function(res) { return res.text(); })
+      .then(function(csv) {
+        clearTimeout(timeoutId);
+        var rows = parseCSV(csv);
+        rows = rows.filter(function(r) { return r.hallno && r.hallno !== '0'; });
+        if (rows.length > 0) {
+          renderLocationData(rows);
+        }
+      })
+      .catch(function() {
+        clearTimeout(timeoutId);
+        // Silently ignore — embedded data is already showing
+      });
+  } catch(e) {
+    // AbortController not supported or other error — embedded data already showing
+  }
 }
 
 function buildRangeString(halls) {

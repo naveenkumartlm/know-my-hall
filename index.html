@@ -512,6 +512,7 @@ body::before {
         <option value="2">II Year</option>
         <option value="3">III Year</option>
         <option value="4">IV Year</option>
+        <option value="5">Arrear</option>
       </select>
 
       <div class="btn-row">
@@ -561,11 +562,15 @@ body::before {
 </div>
 
 <script>
-// ─── Published Google Sheet CSV URLs ───
-// Year 1 hall allotment data
-var SHEET_YEAR1 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTl3D2crK0hJ8LYApcvhjlbbjhY99k123uCyZ48-shuUA4nPQf0Eq7tR9DtwmJ9ydynuvKTSt9Q7EJ/pub?output=csv';
-// Year 2, 3, 4 and Arrear hall allotment data (all share this sheet)
-var SHEET_YEAR234 = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnF8DZQTCObS6_C30FrYRAulmDZKG-J2wMONbFSVCq-Wp0JhyQihprrkNHrBMn7gjbEsHhGJ3Tax3e/pub?output=csv';
+// ─── Google Sheet CSV URLs (one per year, matching admin app) ───
+// Uses /gviz/tq?tqx=out:csv — works when sheets are shared as "Anyone with the link can view"
+var SHEET_URLS = {
+  '1': 'https://docs.google.com/spreadsheets/d/1hR3MAUzVvfR9MTgZmoSOIc6_BTLzZujAzPx3CQf_AFE/gviz/tq?tqx=out:csv',
+  '2': 'https://docs.google.com/spreadsheets/d/16x0jsHS_ICP_52yrNlFR2sj0jykTSlSFearWEt-eY6g/gviz/tq?tqx=out:csv',
+  '3': 'https://docs.google.com/spreadsheets/d/1jr6JS5i-vYWO3kKqTRenVUHHaI-8h-hhCBrheE3g9aI/gviz/tq?tqx=out:csv',
+  '4': 'https://docs.google.com/spreadsheets/d/12CzleK658m5IWnfLfo1yPy20k8O3Hajq2o8q10MJpOY/gviz/tq?tqx=out:csv',
+  '5': 'https://docs.google.com/spreadsheets/d/1Z1k6nL-akwPAYnON1KCGqFU9G52BNJZY8G6sVrtZW_I/gviz/tq?tqx=out:csv'
+};
 // Hall location mapping (block, floor)
 var SHEET_LOCATION = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqm-8lTSW7AWPbBydMQyIxyBArzR7gcymYGsX2KekSrFK8PmZmGd9v8pLPQzA4JqMmTUn8bQh7vw4M/pub?output=csv';
 
@@ -693,10 +698,17 @@ function parseCSV(text) {
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
     if (!line) continue;
-    // Simple split — these sheets have no commas in values
+    // Split by comma, then strip surrounding double quotes (gviz format)
     var cols = line.split(',');
-    if (i === 0) {
-      headers = cols.map(function(h) { return h.trim().toLowerCase(); });
+    cols = cols.map(function(c) {
+      c = c.trim();
+      if (c.length >= 2 && c.charAt(0) === '"' && c.charAt(c.length - 1) === '"') {
+        c = c.substring(1, c.length - 1);
+      }
+      return c.trim();
+    });
+    if (headers.length === 0) {
+      headers = cols.map(function(h) { return h.toLowerCase(); });
     } else {
       var row = {};
       for (var j = 0; j < headers.length; j++) {
@@ -762,7 +774,7 @@ function findHall() {
   document.getElementById('submitBtn').disabled = true;
 
   // Pick the right sheet based on year
-  var sheetUrl = year === '1' ? SHEET_YEAR1 : SHEET_YEAR234;
+  var sheetUrl = SHEET_URLS[year];
 
   fetch(sheetUrl)
     .then(function(res) { return res.text(); })
